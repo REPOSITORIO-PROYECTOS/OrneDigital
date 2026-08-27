@@ -4,8 +4,8 @@
   --ink: #1a1414;
   --muted: #5e5555;
   --line: color-mix(in srgb, var(--ink) 10%, transparent);
-  --accent: #c44545;
-  --accent-deep: #a33838;
+  --accent: #ff3131;
+  --accent-deep: #ff3131;
   --accent-ink: #ffffff;
   --surface: #ffffff;
   --font-display: "Outfit", system-ui, sans-serif;
@@ -417,8 +417,8 @@ button {
 .cta-service {
   justify-self: start;
   background: transparent;
-  color: var(--accent-deep);
-  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  color: var(--accent);
+  border: 1px solid var(--accent);
   padding: 0.55rem 1rem;
 }
 
@@ -568,7 +568,7 @@ button {
   aspect-ratio: 4 / 5;
   display: grid;
   place-items: center;
-  background: color-mix(in srgb, var(--accent) 88%, #5a3030);
+  background: var(--accent);
   color: #fff;
   font-family: var(--font-body);
   font-size: 0.95rem;

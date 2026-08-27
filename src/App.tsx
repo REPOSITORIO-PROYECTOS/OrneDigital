@@ -69,6 +69,18 @@ const SERVICES: Service[] = [
     ],
   },
   {
+    id: "ugc",
+    title: "Contenido UGC",
+    blurb:
+      "El UGC (User Generated Content) es contenido creado con un estilo natural y cercano, pensado para que tu marca se comunique con su audiencia de una forma más auténtica.",
+    includes: [
+      "Videos y piezas de contenido para mostrar tu producto o servicio",
+      "Contenido real, espontáneo y atractivo",
+      "Una recomendación cercana, como la de alguien a quien le gusta tu marca",
+    ],
+    note: "Encargada: Celeste Achem.",
+  },
+  {
     id: "diseno",
     title: "Diseño gráfico",
     blurb: "Piezas para redes e impresión.",
@@ -105,7 +117,7 @@ const PDF_PRODUCTS: PdfProduct[] = [
     title: "Pack de 120 hooks para reel",
     blurb: "Aperturas listas para frenar el scroll y empezar fuerte.",
     category: "Recursos PDF",
-    priceLabel: "$39.999",
+    priceLabel: "$21.999",
     coverSrc: "/pdf/hooks-cover.jpg",
   },
   {
@@ -129,7 +141,7 @@ const PDF_PRODUCTS: PdfProduct[] = [
     title: "100 ideas de contenido para tu negocio",
     blurb: "Ideas accionables para no quedarte sin qué publicar.",
     category: "Recursos PDF",
-    priceLabel: "$21.999",
+    priceLabel: "$34.999",
     coverSrc: "/pdf/ideas-cover.jpg",
   },
 ];
