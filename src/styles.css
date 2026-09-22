@@ -546,19 +546,30 @@ button {
 }
 
 .works-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  align-items: stretch;
   gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0.5rem 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.works-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .work-card,
 .work-more {
+  flex: 0 0 auto;
+  width: min(16rem, 62vw);
   aspect-ratio: 9 / 16;
   border-radius: 0.75rem;
   overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--line);
-  position: relative;
+  scroll-snap-align: start;
 }
 
 .work-card {
@@ -603,16 +614,6 @@ button {
   border-bottom: 0.7rem solid transparent;
 }
 
-.work-label {
-  flex: 0 0 auto;
-  margin: 0;
-  padding: 0.55rem 0.75rem;
-  font-size: 0.85rem;
-  color: var(--muted);
-  text-align: center;
-  background: var(--surface);
-}
-
 .work-more {
   display: grid;
   align-content: center;
@@ -628,19 +629,6 @@ button {
 .work-more:hover {
   background: var(--accent);
   color: var(--accent-ink);
-}
-
-@media (min-width: 720px) {
-  .works-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .works-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
 }
 
 .shop {

@@ -279,7 +279,6 @@ function VideoCard({ video }: { video: WorkVideo }) {
           <span>Reproducir</span>
         </button>
       )}
-      <figcaption className="work-label">{video.title}</figcaption>
     </figure>
   );
 }
