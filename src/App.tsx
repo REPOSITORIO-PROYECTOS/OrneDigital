@@ -121,20 +121,12 @@ const PDF_PRODUCTS: PdfProduct[] = [
     coverSrc: "/pdf/hooks-cover.jpg",
   },
   {
-    id: "copys",
-    title: "Copys estratégicos para reels y publicaciones",
-    blurb: "Aprendé a escribir textos que venden sin sonar forzados.",
+    id: "stories",
+    title: "5 estrategias para vender por historias",
+    blurb: "Ideas prácticas para convertir tus historias en una herramienta de venta.",
     category: "Recursos PDF",
-    priceLabel: "Precio a confirmar",
-    coverSrc: "/pdf/copys-cover.jpg",
-  },
-  {
-    id: "ctas",
-    title: "Pack de CTAs que convierten",
-    blurb: "Llamados a la acción claros para stories, reels y feed.",
-    category: "Recursos PDF",
-    priceLabel: "Precio a confirmar",
-    coverSrc: "/pdf/ctas-cover.jpg",
+    priceLabel: "$24.999",
+    coverSrc: "/pdf/stories-cover.PNG",
   },
   {
     id: "ideas",
@@ -146,20 +138,54 @@ const PDF_PRODUCTS: PdfProduct[] = [
   },
 ];
 
-type OfferCard = {
-  id: string;
-  title: string;
-  blurb: string;
-  cta: string;
-  href: string;
-  isExternal: boolean;
-};
-
 type Testimonial = {
   id: string;
   src: string;
   alt: string;
 };
+
+type WorkVideo = {
+  id: string;
+  title: string;
+  driveId: string;
+  href: string;
+};
+
+const WORK_VIDEOS: WorkVideo[] = [
+  {
+    id: "w1",
+    title: "Trabajo 1",
+    driveId: "1qBHqQ-_oQ60ixKJg1IOBY8rXRNqAWAvL",
+    href: "https://drive.google.com/file/d/1qBHqQ-_oQ60ixKJg1IOBY8rXRNqAWAvL/view?usp=share_link",
+  },
+  {
+    id: "w2",
+    title: "Trabajo 2",
+    driveId: "1MBVGkVLf9ExBvSGZynBk7V1FA3uP8wM8",
+    href: "https://drive.google.com/file/d/1MBVGkVLf9ExBvSGZynBk7V1FA3uP8wM8/view?usp=sharing",
+  },
+  {
+    id: "w3",
+    title: "Trabajo 3",
+    driveId: "1KkO7lah_XhaDOl0VycTZ496qw7wJahmq",
+    href: "https://drive.google.com/file/d/1KkO7lah_XhaDOl0VycTZ496qw7wJahmq/view?usp=sharing",
+  },
+  {
+    id: "w4",
+    title: "Trabajo 4",
+    driveId: "1tTl2MDr64LyivMJcnkvddAYUDD8CWpKN",
+    href: "https://drive.google.com/file/d/1tTl2MDr64LyivMJcnkvddAYUDD8CWpKN/view?usp=sharing",
+  },
+  {
+    id: "w5",
+    title: "Trabajo 5",
+    driveId: "14D2BlvcFBwfbr6WhYn4yKeARP9Fl_l0x",
+    href: "https://drive.google.com/file/d/14D2BlvcFBwfbr6WhYn4yKeARP9Fl_l0x/view?usp=sharing",
+  },
+];
+
+const MORE_WORKS_FOLDER =
+  "https://drive.google.com/drive/folders/11io68EWYu3qWRU2PVD6whdFT6b7dVr8T?usp=sharing";
 
 const TESTIMONIALS: Testimonial[] = [
   {
@@ -230,23 +256,41 @@ function AssetSlot({
   );
 }
 
+function VideoCard({ video }: { video: WorkVideo }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <figure className="work-card reveal">
+      {isOpen ? (
+        <iframe
+          src={`https://drive.google.com/file/d/${video.driveId}/preview`}
+          title={video.title}
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+        />
+      ) : (
+        <button
+          type="button"
+          className="work-play"
+          onClick={() => setIsOpen(true)}
+          aria-label={`Reproducir ${video.title}`}
+        >
+          <span className="work-play-icon" aria-hidden="true" />
+          <span>Reproducir</span>
+        </button>
+      )}
+      <figcaption className="work-label">{video.title}</figcaption>
+    </figure>
+  );
+}
+
 export default function App() {
-  const [toast, setToast] = useState<string | null>(null);
-  const [purchaseDone, setPurchaseDone] = useState<string | null>(null);
   const [openServiceId, setOpenServiceId] = useState<string | null>(null);
 
-  function showToast(message: string) {
-    setToast(message);
-    window.setTimeout(() => setToast(null), 3200);
-  }
-
-  function handleBuy(product: PdfProduct) {
-    setPurchaseDone(product.title);
-    showToast("Compra simulada · en prod el PDF llega a tu mail");
-  }
-
-  function closeThanks() {
-    setPurchaseDone(null);
+  function pdfPurchaseHref(product: PdfProduct): string {
+    return waLink(
+      `Hola Orne! Quiero comprar el PDF “${product.title}”. ¿Me pasás los medios de pago y cómo lo recibo?`,
+    );
   }
 
   function toggleService(id: string) {
@@ -262,31 +306,6 @@ export default function App() {
   const meetingHref = waLink(
     "Hola Orne! Quiero agendar una reunión para hablar de mi marca / servicio.",
   );
-  const cmHref = waLink(
-    "Hola Orne! Soy Community Manager / freelancer y quiero una asesoría.",
-  );
-
-  const cmOffers: OfferCard[] = [
-    {
-      id: "asesoria",
-      title: "¿Sentís que tu servicio está estancado?",
-      blurb:
-        "Una conversación 1:1 para destrabar dudas, ordenar tu oferta y dar el siguiente paso como CM o freelancer.",
-      cta: "Reservar conversación",
-      href: cmHref,
-      isExternal: true,
-    },
-    {
-      id: "guias",
-      title: "Kit de recursos PDF",
-      blurb:
-        "Hooks, copys, CTAs e ideas de contenido para dejar de improvisar y trabajar con más claridad.",
-      cta: "Ver recursos",
-      href: "#tienda",
-      isExternal: false,
-    },
-  ];
-
   const bannerItems = [...TESTIMONIALS, ...TESTIMONIALS];
 
   return (
@@ -299,6 +318,7 @@ export default function App() {
         <nav className="nav" aria-label="Secciones">
           <a href="#sobre-mi">Sobre mí</a>
           <a href="#servicios">Servicios</a>
+          <a href="#trabajos">Trabajos</a>
           <a href="#tienda">Recursos</a>
           <a href="#contacto">Contacto</a>
         </nav>
@@ -419,35 +439,26 @@ export default function App() {
         </Reveal>
       </section>
 
-      <section className="cm-offers" id="asesorias">
+      <section className="works" id="trabajos">
         <Reveal className="section-head">
-          <h2>Servicios / Recursos</h2>
+          <h2>Trabajos que hice</h2>
           <p className="section-lede">
-            Para negocios, emprendimientos, creadores de contenido y CMs que
-            quieran ordenar su trabajo y crecer con más estrategia.
+            Algunos videos de proyectos que realicé. Tocá reproducir para verlos.
           </p>
         </Reveal>
-        <ul className="offer-grid">
-          {cmOffers.map((offer, index) => (
-            <li
-              key={offer.id}
-              className="offer-card reveal"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <h3>{offer.title}</h3>
-              <p>{offer.blurb}</p>
-              <a
-                className="cta-service"
-                href={offer.href}
-                {...(offer.isExternal
-                  ? { target: "_blank", rel: "noreferrer" }
-                  : {})}
-              >
-                {offer.cta}
-              </a>
-            </li>
+        <div className="works-grid">
+          {WORK_VIDEOS.map((video) => (
+            <VideoCard key={video.id} video={video} />
           ))}
-        </ul>
+          <a
+            className="work-more reveal"
+            href={MORE_WORKS_FOLDER}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Ver más trabajos en Drive
+          </a>
+        </div>
       </section>
 
       <section className="testimonials" id="testimonios">
@@ -476,8 +487,8 @@ export default function App() {
         <Reveal className="section-head">
           <h2>Guías prácticas</h2>
           <p className="section-lede">
-            Recursos para avanzar más rápido, con claridad y estructura. Compra
-            simulada: en producción, checkout → PDF al mail.
+            Recursos para avanzar más rápido, con claridad y estructura. Elegí
+            un PDF y escribime por WhatsApp para coordinar la compra.
           </p>
         </Reveal>
         <ul className="product-grid">
@@ -499,13 +510,14 @@ export default function App() {
               <h3>{product.title}</h3>
               <p>{product.blurb}</p>
               <p className="product-price">{product.priceLabel}</p>
-              <button
-                type="button"
+              <a
                 className="cta-buy"
-                onClick={() => handleBuy(product)}
+                href={pdfPurchaseHref(product)}
+                target="_blank"
+                rel="noreferrer"
               >
-                Comprar
-              </button>
+                Comprar por WhatsApp
+              </a>
             </li>
           ))}
         </ul>
@@ -536,28 +548,6 @@ export default function App() {
         </a>
       </footer>
 
-      {toast ? (
-        <div className="toast" role="status">
-          {toast}
-        </div>
-      ) : null}
-
-      {purchaseDone ? (
-        <div className="thanks-overlay" role="dialog" aria-modal="true">
-          <div className="thanks-panel">
-            <h2>¡Gracias!</h2>
-            <p>
-              Compra simulada de <strong>{purchaseDone}</strong>.
-            </p>
-            <p className="thanks-note">
-              En producción recibirías el PDF en tu mail luego del checkout.
-            </p>
-            <button type="button" className="cta-primary" onClick={closeThanks}>
-              Seguir explorando
-            </button>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

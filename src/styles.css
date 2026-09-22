@@ -4,8 +4,8 @@
   --ink: #1a1414;
   --muted: #5e5555;
   --line: color-mix(in srgb, var(--ink) 10%, transparent);
-  --accent: #ff3131;
-  --accent-deep: #ff3131;
+  --accent: #5A3113;
+  --accent-deep: #3e210b;
   --accent-ink: #ffffff;
   --surface: #ffffff;
   --font-display: "Outfit", system-ui, sans-serif;
@@ -218,6 +218,7 @@ button {
 .services,
 .cm-offers,
 .testimonials,
+.works,
 .shop,
 .cta-final {
   padding: clamp(3.5rem, 9vw, 6.5rem) clamp(1.25rem, 4vw, 3rem);
@@ -540,6 +541,108 @@ button {
   background: #ece7e4;
 }
 
+.works {
+  background: var(--bg);
+}
+
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.work-card,
+.work-more {
+  aspect-ratio: 9 / 16;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  position: relative;
+}
+
+.work-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.work-card iframe {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  display: block;
+}
+
+.work-play {
+  flex: 1 1 auto;
+  display: grid;
+  place-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 0;
+  padding: 1rem;
+  border: none;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.work-play:hover {
+  background: var(--accent-deep);
+}
+
+.work-play-icon {
+  width: 0;
+  height: 0;
+  border-left: 1.1rem solid var(--accent-ink);
+  border-top: 0.7rem solid transparent;
+  border-bottom: 0.7rem solid transparent;
+}
+
+.work-label {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+  background: var(--surface);
+}
+
+.work-more {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-decoration: none;
+  color: var(--accent);
+  font-weight: 600;
+  text-align: center;
+  padding: 1rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.work-more:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+@media (min-width: 720px) {
+  .works-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .works-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
 .shop {
   background: color-mix(in srgb, var(--bg-soft) 80%, transparent);
 }
@@ -568,7 +671,7 @@ button {
   aspect-ratio: 4 / 5;
   display: grid;
   place-items: center;
-  background: var(--accent);
+  background: color-mix(in srgb, var(--accent) 88%, var(--accent-deep));
   color: #fff;
   font-family: var(--font-body);
   font-size: 0.95rem;
