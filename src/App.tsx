@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const WA_BASE = "https://wa.me/5492645720932";
 const IG_HANDLE = "ornecerderaa.digital";
@@ -256,21 +256,62 @@ function AssetSlot({
   );
 }
 
-function VideoCard({ video }: { video: WorkVideo }) {
-  const [isOpen, setIsOpen] = useState(false);
+function VideoCard({
+  video,
+  onPlay,
+}: {
+  video: WorkVideo;
+  onPlay: () => void;
+}) {
   const [thumbFailed, setThumbFailed] = useState(false);
 
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
+  return (
+    <figure className="work-card reveal">
+      <button
+        type="button"
+        className="work-play"
+        onClick={onPlay}
+        aria-label={`Reproducir ${video.title}`}
+      >
+        {thumbFailed ? null : (
+          <img
+            className="work-thumb"
+            src={`https://drive.google.com/thumbnail?id=${video.driveId}&sz=w1000`}
+            alt=""
+            onError={() => setThumbFailed(true)}
+          />
+        )}
+        <span className="work-play-icon" aria-hidden="true" />
+        <span className="work-play-label">Reproducir</span>
+      </button>
+    </figure>
+  );
+}
 
+function WorkLightbox({
+  video,
+  onClose,
+  onPrev,
+  onNext,
+}: {
+  video: WorkVideo;
+  onClose: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setIsOpen(false);
+        onClose();
+      }
+      if (event.key === "ArrowLeft") {
+        onPrev();
+      }
+      if (event.key === "ArrowRight") {
+        onNext();
       }
     }
 
@@ -279,64 +320,184 @@ function VideoCard({ video }: { video: WorkVideo }) {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [isOpen]);
+  }, [onClose, onPrev, onNext]);
+
+  return (
+    <div
+      className="work-lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label={video.title}
+      onClick={onClose}
+    >
+      <button
+        type="button"
+        className="work-lightbox-nav work-lightbox-prev"
+        aria-label="Video anterior"
+        onClick={(event) => {
+          event.stopPropagation();
+          onPrev();
+        }}
+      />
+      <div
+        className="work-lightbox-panel"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <iframe
+          key={video.id}
+          src={`https://drive.google.com/file/d/${video.driveId}/preview`}
+          title={video.title}
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+        />
+        <a
+          className="work-lightbox-open"
+          href={video.href}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Abrir en Drive
+        </a>
+        <button type="button" className="work-lightbox-close" onClick={onClose}>
+          Cerrar
+        </button>
+      </div>
+      <button
+        type="button"
+        className="work-lightbox-nav work-lightbox-next"
+        aria-label="Video siguiente"
+        onClick={(event) => {
+          event.stopPropagation();
+          onNext();
+        }}
+      />
+    </div>
+  );
+}
+
+function WorksRail() {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const pausedRef = useRef(false);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    pausedRef.current = openIndex !== null;
+  }, [openIndex]);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) {
+      return;
+    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      if (pausedRef.current) {
+        return;
+      }
+      const card = scroller.querySelector<HTMLElement>(".work-card, .work-more");
+      const step = (card?.getBoundingClientRect().width ?? 260) + 16;
+      const maxScroll = scroller.scrollWidth - scroller.clientWidth;
+      if (maxScroll <= 4) {
+        return;
+      }
+      if (scroller.scrollLeft >= maxScroll - 12) {
+        scroller.scrollTo({ left: 0, behavior: "smooth" });
+        return;
+      }
+      scroller.scrollBy({ left: step, behavior: "smooth" });
+    }, 3800);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  function scrollByCard(direction: -1 | 1) {
+    const scroller = scrollerRef.current;
+    if (!scroller) {
+      return;
+    }
+    const card = scroller.querySelector<HTMLElement>(".work-card");
+    const step = (card?.getBoundingClientRect().width ?? 260) + 16;
+    scroller.scrollBy({ left: direction * step, behavior: "smooth" });
+  }
+
+  function goOpen(delta: number) {
+    setOpenIndex((current) => {
+      if (current === null) {
+        return current;
+      }
+      return (current + delta + WORK_VIDEOS.length) % WORK_VIDEOS.length;
+    });
+  }
+
+  const openVideo = openIndex === null ? null : WORK_VIDEOS[openIndex];
 
   return (
     <>
-      <figure className="work-card reveal">
+      <div
+        className="works-rail"
+        onMouseEnter={() => {
+          pausedRef.current = true;
+        }}
+        onMouseLeave={() => {
+          if (openIndex === null) {
+            pausedRef.current = false;
+          }
+        }}
+        onTouchStart={() => {
+          pausedRef.current = true;
+        }}
+        onTouchEnd={() => {
+          window.setTimeout(() => {
+            if (!document.querySelector(".work-lightbox")) {
+              pausedRef.current = false;
+            }
+          }, 4500);
+        }}
+      >
         <button
           type="button"
-          className="work-play"
-          onClick={() => setIsOpen(true)}
-          aria-label={`Reproducir ${video.title}`}
-        >
-          {thumbFailed ? null : (
-            <img
-              className="work-thumb"
-              src={`https://drive.google.com/thumbnail?id=${video.driveId}&sz=w1000`}
-              alt=""
-              onError={() => setThumbFailed(true)}
-            />
-          )}
-          <span className="work-play-icon" aria-hidden="true" />
-          <span className="work-play-label">Reproducir</span>
-        </button>
-      </figure>
-      {isOpen ? (
+          className="works-nav works-nav-prev"
+          aria-label="Video anterior"
+          onClick={() => scrollByCard(-1)}
+        />
         <div
-          className="work-lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label={video.title}
-          onClick={() => setIsOpen(false)}
+          className="works-grid"
+          ref={scrollerRef}
+          aria-label="Carrusel de trabajos"
         >
-          <div
-            className="work-lightbox-panel"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <iframe
-              src={`https://drive.google.com/file/d/${video.driveId}/preview`}
-              title={video.title}
-              allow="autoplay; encrypted-media"
-              allowFullScreen
+          {WORK_VIDEOS.map((video, index) => (
+            <VideoCard
+              key={video.id}
+              video={video}
+              onPlay={() => setOpenIndex(index)}
             />
-            <a
-              className="work-lightbox-open"
-              href={video.href}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Abrir en Drive
-            </a>
-            <button
-              type="button"
-              className="work-lightbox-close"
-              onClick={() => setIsOpen(false)}
-            >
-              Cerrar
-            </button>
-          </div>
+          ))}
+          <a
+            className="work-more reveal"
+            href={MORE_WORKS_FOLDER}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Ver más trabajos en Drive
+          </a>
         </div>
+        <button
+          type="button"
+          className="works-nav works-nav-next"
+          aria-label="Video siguiente"
+          onClick={() => scrollByCard(1)}
+        />
+      </div>
+      {openVideo ? (
+        <WorkLightbox
+          video={openVideo}
+          onClose={() => setOpenIndex(null)}
+          onPrev={() => goOpen(-1)}
+          onNext={() => goOpen(1)}
+        />
       ) : null}
     </>
   );
@@ -501,22 +662,11 @@ export default function App() {
         <Reveal className="section-head">
           <h2>Trabajos que hice</h2>
           <p className="section-lede">
-            Algunos videos de proyectos que realicé. Tocá reproducir para verlos.
+            Algunos videos de proyectos que realicé. El carrusel avanza solo;
+            usá las flechas o deslizá para verlos todos.
           </p>
         </Reveal>
-        <div className="works-grid">
-          {WORK_VIDEOS.map((video) => (
-            <VideoCard key={video.id} video={video} />
-          ))}
-          <a
-            className="work-more reveal"
-            href={MORE_WORKS_FOLDER}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Ver más trabajos en Drive
-          </a>
-        </div>
+        <WorksRail />
       </section>
 
       <section className="testimonials" id="testimonios">
