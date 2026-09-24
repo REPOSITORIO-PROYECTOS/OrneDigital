@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 const WA_BASE = "https://wa.me/5492645720932";
 const IG_HANDLE = "ornecerderaa.digital";
@@ -258,28 +258,87 @@ function AssetSlot({
 
 function VideoCard({ video }: { video: WorkVideo }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [thumbFailed, setThumbFailed] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen]);
 
   return (
-    <figure className="work-card reveal">
-      {isOpen ? (
-        <iframe
-          src={`https://drive.google.com/file/d/${video.driveId}/preview`}
-          title={video.title}
-          allow="autoplay; encrypted-media"
-          allowFullScreen
-        />
-      ) : (
+    <>
+      <figure className="work-card reveal">
         <button
           type="button"
           className="work-play"
           onClick={() => setIsOpen(true)}
           aria-label={`Reproducir ${video.title}`}
         >
+          {thumbFailed ? null : (
+            <img
+              className="work-thumb"
+              src={`https://drive.google.com/thumbnail?id=${video.driveId}&sz=w1000`}
+              alt=""
+              onError={() => setThumbFailed(true)}
+            />
+          )}
           <span className="work-play-icon" aria-hidden="true" />
-          <span>Reproducir</span>
+          <span className="work-play-label">Reproducir</span>
         </button>
-      )}
-    </figure>
+      </figure>
+      {isOpen ? (
+        <div
+          className="work-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={video.title}
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            className="work-lightbox-panel"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <iframe
+              src={`https://drive.google.com/file/d/${video.driveId}/preview`}
+              title={video.title}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+            <a
+              className="work-lightbox-open"
+              href={video.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Abrir en Drive
+            </a>
+            <button
+              type="button"
+              className="work-lightbox-close"
+              onClick={() => setIsOpen(false)}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
 
