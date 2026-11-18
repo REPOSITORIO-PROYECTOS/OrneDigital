@@ -126,7 +126,7 @@ const PDF_PRODUCTS: PdfProduct[] = [
     blurb: "Ideas prácticas para convertir tus historias en una herramienta de venta.",
     category: "Recursos PDF",
     priceLabel: "$24.999",
-    coverSrc: "/pdf/stories-cover.PNG",
+    coverSrc: "/pdf/stories-cover.jpg",
   },
   {
     id: "ideas",
@@ -569,7 +569,7 @@ export default function App() {
       <section className="about" id="sobre-mi">
         <div className="about-split">
           <div className="about-media">
-            <img src="/orne-lifestyle.png" alt="Orne trabajando con su notebook" />
+            <img src="/orne-portrait.jpg" alt="Retrato de Orne" />
           </div>
           <Reveal className="about-copy">
             <h2>Sobre mí</h2>
