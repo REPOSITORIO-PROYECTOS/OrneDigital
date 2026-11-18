@@ -1,2 +1,6 @@
 # PDFs de pago: el CLI de Vercel no respeta solo .gitignore
 public/pdf/*.pdf
+
+# Índices y config local del editor: no son el sitio
+.codegraph
+.cursor
